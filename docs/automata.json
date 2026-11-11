@@ -1,0 +1,49 @@
+{
+  "project": "Finite Automata for Real-Time Input Validation",
+  "alphabet_convention": "ASCII classes are specified per model; inputs outside a model's language transition to a rejecting/dead configuration.",
+  "models": {
+    "password_policy": {
+      "type": "DFA",
+      "state": "(n, m): n is length capped at 8; m is a 4-bit category mask",
+      "start": [0, 0],
+      "acceptance": "end of input with n=8 and m=15",
+      "mask_bits": {"uppercase": 1, "lowercase": 2, "ascii_digit": 4, "ascii_non_alphanumeric": 8},
+      "transition": "increment n up to 8 and OR the matching category bit into m"
+    },
+    "email_subset": {
+      "type": "NFA, then subset-construction DFA, then minimized DFA",
+      "accepted_language": "alnum+ ( [._-] alnum+ )* @ label ( . label )* . letter{2,}; label = alnum+ ( - alnum+ )*",
+      "start": "local_start",
+      "accepting": ["tld_accept"],
+      "states": ["local_start", "local_word", "local_need_alnum", "domain_start", "domain_word", "domain_need_alnum", "domain_after_dot", "tld_first", "tld_one", "tld_accept"],
+      "transitions": {
+        "local_start": {"ASCII_ALNUM": ["local_word"]},
+        "local_word": {"ASCII_ALNUM": ["local_word"], "LOCAL_SEPARATOR(._-)": ["local_need_alnum"], "@": ["domain_start"]},
+        "local_need_alnum": {"ASCII_ALNUM": ["local_word"]},
+        "domain_start": {"ASCII_ALNUM": ["domain_word"]},
+        "domain_word": {"ASCII_ALNUM": ["domain_word"], "-": ["domain_need_alnum"], ".": ["domain_after_dot", "tld_first"]},
+        "domain_need_alnum": {"ASCII_ALNUM": ["domain_word"]},
+        "domain_after_dot": {"ASCII_ALNUM": ["domain_word"]},
+        "tld_first": {"ASCII_LETTER": ["tld_one"]},
+        "tld_one": {"ASCII_LETTER": ["tld_accept"]},
+        "tld_accept": {"ASCII_LETTER": ["tld_accept"]}
+      },
+      "nondeterministic_choice": "On a dot after a domain label, continue the domain or guess that the final suffix begins here."
+    },
+    "four_digit_pin": {
+      "type": "DFA",
+      "alphabet": ["ASCII_DIGIT", "OTHER"],
+      "states": ["q0", "q1", "q2", "q3", "q4", "dead"],
+      "start": "q0",
+      "accepting": ["q4"],
+      "transition": "ASCII digit advances q0→q1→q2→q3→q4; any other input, or any input after q4, goes to dead; dead loops."
+    },
+    "three_strike_session": {
+      "type": "DFA over events C (correct) and W (wrong)",
+      "states": ["READY", "ONE_WRONG", "TWO_WRONG", "LOCKED"],
+      "start": "READY",
+      "transition": "W advances toward LOCKED; C resets to READY; LOCKED is absorbing."
+    }
+  }
+}
+
