@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Finite Automata Lab</title>
+  <style>
+    :root{color-scheme:light;--ink:#182230;--muted:#526174;--line:#d8e0e8;--blue:#155eef;--green:#067647;--red:#b42318;--paper:#f5f8fc}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,Segoe UI,sans-serif}
+    main{max-width:900px;margin:36px auto;padding:0 18px}.card{background:white;border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:0 8px 26px #1822300c}
+    h1{margin:0 0 6px;font-size:clamp(1.7rem,4vw,2.3rem)}p{color:var(--muted);margin:8px 0 18px}.row{display:grid;grid-template-columns:190px 1fr;gap:12px;align-items:end}
+    label{font-weight:650;display:block;margin-bottom:6px}select,input,button{font:inherit;border:1px solid #aebdca;border-radius:9px;padding:10px 12px;background:white;color:var(--ink)}input{width:100%}button{cursor:pointer;background:var(--blue);color:white;border-color:var(--blue);font-weight:650}button:hover{filter:brightness(.94)}
+    .actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}.example{background:#eef4ff;color:#1849a9;border-color:#c7d7fe}.result{margin-top:20px;padding:14px;border-radius:10px;background:#f2f4f7;border:1px solid var(--line)}.result.accept{background:#ecfdf3;border-color:#abefc6;color:var(--green)}.result.reject{background:#fef3f2;border-color:#fecdca;color:var(--red)}
+    h2{font-size:1.1rem;margin:22px 0 8px}.trace{font:13px/1.55 ui-monospace,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:350px;overflow:auto;background:#101828;color:#e6edf5;padding:14px;border-radius:10px}.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{border:1px solid var(--line);border-radius:999px;padding:4px 9px;color:var(--muted);font-size:.88rem}.chip.on{background:#ecfdf3;border-color:#abefc6;color:var(--green)}footer{color:var(--muted);font-size:.88rem;margin:16px 2px}
+    @media(max-width:600px){.row{grid-template-columns:1fr}.card{padding:18px}}
+  </style>
+</head>
+<body>
+<main>
+  <section class="card">
+    <h1>Finite Automata Lab</h1>
+    <p>Explore how DFA and NFA state changes decide whether an input belongs to a language. This standalone demo uses the project’s stated ASCII rules.</p>
+    <div class="row">
+      <div><label for="mode">Model</label><select id="mode"><option value="password">Password policy DFA</option><option value="email">Email subset NFA</option><option value="pin">Four-digit PIN DFA</option><option value="session">Three-strike session DFA</option></select></div>
+      <div><label for="value">Input</label><input id="value" autocomplete="off" spellcheck="false" placeholder="Type a value"></div>
+    </div>
+    <div class="actions"><button id="run">Run automaton</button><button class="example" id="example">Load example</button></div>
+    <div id="result" class="result" aria-live="polite">Choose a model and run an input.</div>
+    <h2>Requirement states</h2><div id="chips" class="chips"></div>
+    <h2>Transition trace</h2><div id="trace" class="trace">No run yet.</div>
+  </section>
+  <footer>Format recognition only. It does not authenticate a bank account, confirm an email mailbox, or rate password strength. Full model definitions and limits are in <a href="design.md">the report</a>.</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id), mode=$("mode"), input=$("value"), result=$("result"), trace=$("trace"), chips=$("chips");
+const examples={password:"Abcdef1!",email:"first.last@sub.example.org",pin:"4821",session:"WWCWW"};
+function chars(s){return Array.from(s)}
+function nfaStep(q,c){const a=c.charCodeAt(0)<128&&/[A-Za-z0-9]/.test(c), letter=c.charCodeAt(0)<128&&/[A-Za-z]/.test(c), n=new Set();
+ if(q==="local_start"&&a)n.add("local_word");
+ else if(q==="local_word"){if(a)n.add("local_word");else if("._-".includes(c))n.add("local_need_alnum");else if(c==="@")n.add("domain_start");}
+ else if(q==="local_need_alnum"&&a)n.add("local_word");
+ else if(q==="domain_start"&&a)n.add("domain_word");
+ else if(q==="domain_word"){if(a)n.add("domain_word");else if(c==="-")n.add("domain_need_alnum");else if(c==="."){n.add("domain_after_dot");n.add("tld_first");}}
+ else if((q==="domain_need_alnum"||q==="domain_after_dot")&&a)n.add("domain_word");
+ else if(q==="tld_first"&&letter)n.add("tld_one");
+ else if(q==="tld_one"&&letter)n.add("tld_accept");
+ else if(q==="tld_accept"&&letter)n.add("tld_accept");
+ return n;
+}
+function display(ok,lines,requirements=[]){result.className="result "+(ok?"accept":"reject");result.textContent=ok?"ACCEPTED — an accepting state is active at end of input.":"REJECTED — no accepting state is active at end of input.";trace.textContent=lines.join("\n")||"(empty input)";chips.replaceChildren(...requirements.map(([label,on])=>{const s=document.createElement("span");s.className="chip"+(on?" on":"");s.textContent=(on?"✓ ":"○ ")+label;return s;}));}
+function run(){const s=input.value, letters=chars(s), lines=[];let ok=false, requirements=[];
+ if(mode.value==="password"){let length=0,mask=0;lines.push(`start (length=0, mask=0000)`);for(const c of letters){length=Math.min(8,length+1);if(/[A-Z]/.test(c))mask|=1;if(/[a-z]/.test(c))mask|=2;if(/[0-9]/.test(c))mask|=4;if(c.charCodeAt(0)<128&&!/[A-Za-z0-9]/.test(c))mask|=8;lines.push(`${JSON.stringify(c)} → (length=${length}, mask=${mask.toString(2).padStart(4,"0")})`);}ok=length===8&&mask===15;requirements=[["8+ characters",length===8],["uppercase",!!(mask&1)],["lowercase",!!(mask&2)],["digit",!!(mask&4)],["ASCII special",!!(mask&8)]];}
+ else if(mode.value==="email"){let states=new Set(["local_start"]);lines.push(`start {${[...states]}}`);for(const c of letters){const next=new Set();for(const q of states)for(const t of nfaStep(q,c))next.add(t);states=next;lines.push(`${JSON.stringify(c)} → {${[...states].sort().join(", ")||"∅"}}`);}ok=states.has("tld_accept");requirements=[["local part",["local_word","local_need_alnum","domain_start","domain_word","domain_need_alnum","domain_after_dot","tld_first","tld_one","tld_accept"].some(x=>states.has(x))],["final suffix ≥2 letters",ok]];}
+ else if(mode.value==="pin"){let state=0;lines.push("start q0");for(const c of letters){state=(state!=="dead"&&/[0-9]/.test(c)&&c.charCodeAt(0)<128&&state<4)?state+1:"dead";lines.push(`${JSON.stringify(c)} → ${state===4?"q4":state==="dead"?"dead":`q${state}`}`);}ok=state===4;requirements=[["exactly four ASCII digits",ok]];}
+ else {let state="READY";lines.push("start READY");for(const c of letters){if(c!=="C"&&c!=="W"){display(false,[`Invalid event ${JSON.stringify(c)}; use C or W.`]);return;}if(state!=="LOCKED"){if(c==="C")state="READY";else state={READY:"ONE_WRONG",ONE_WRONG:"TWO_WRONG",TWO_WRONG:"LOCKED"}[state];}lines.push(`${c} → ${state}`);}ok=state!=="LOCKED";requirements=[["failure streak below 3",ok],["locked state absorbing",state==="LOCKED"]];result.className="result "+(state==="LOCKED"?"reject":"accept");result.textContent=state==="LOCKED"?"LOCKED — the third consecutive wrong event enters the absorbing lock state.":`UNLOCKED — final state ${state}.`;trace.textContent=lines.join("\n");chips.replaceChildren(...requirements.map(([label,on])=>{const x=document.createElement("span");x.className="chip"+(on?" on":"");x.textContent=(on?"✓ ":"○ ")+label;return x;}));return;}
+ display(ok,lines,requirements);}
+$("run").addEventListener("click",run);$("example").addEventListener("click",()=>{input.value=examples[mode.value];run();});mode.addEventListener("change",()=>{input.placeholder=mode.value==="session"?"Use C and W, e.g. WWCWW":"Type a value";});input.addEventListener("keydown",e=>{if(e.key==="Enter")run();});
+</script>
+</body>
+</html>
+
