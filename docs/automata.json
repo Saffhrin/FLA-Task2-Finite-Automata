@@ -4,11 +4,12 @@
   "models": {
     "password_policy": {
       "type": "DFA",
-      "state": "(n, m): n is length capped at 8; m is a 4-bit category mask",
+      "state": "Direct product state (n, upper, lower, digit, special): n is length capped at 8 and each flag records whether that category has appeared; equivalent to (n,m) with a 4-bit mask",
       "start": [0, 0],
       "acceptance": "end of input with n=8 and m=15",
       "mask_bits": {"uppercase": 1, "lowercase": 2, "ascii_digit": 4, "ascii_non_alphanumeric": 8},
-      "transition": "increment n up to 8 and OR the matching category bit into m"
+      "construction": "Direct product of five component DFAs: one capped length counter and four seen/not-seen category recognizers",
+      "transition": "advance n up to 8; each category component changes from false to true when matched and then stays true"
     },
     "email_subset": {
       "type": "NFA, then subset-construction DFA, then minimized DFA",
@@ -46,4 +47,3 @@
     }
   }
 }
-

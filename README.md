@@ -33,7 +33,7 @@ python -m unittest discover -s tests -v
 
 | Case | Formal model | Demonstration |
 |---|---|---|
-| Password policy | Product DFA tracks capped length and four character-class flags | Per-character `(length, mask)` trace |
+| Password policy | Direct product of five DFAs: capped length and four independent character-class flags | Per-character product-state trace |
 | Email format | Explicit NFA with a true branch at each candidate domain dot; subset construction and partition-refinement minimization produce DFAs | NFA active-state trace and NFA/DFA agreement cases |
 | ATM PIN | DFA recognizes exactly four ASCII digits | State-by-state digit counter with a dead state |
 | Attempt lockout | Separate DFA over `C`orrect / `W`rong attempt events; locks after three consecutive failures | Session trace, including reset and absorbing lock state |
@@ -55,4 +55,3 @@ docs/        report, Mermaid diagrams, JSON model manifest, and browser demo
 The models recognize formats and event sequences. Password acceptance is not a strength score; email acceptance does not prove that a mailbox exists; PIN format acceptance does not authenticate a bank account; and the session DFA is not a real banking system.
 
 Repository: https://github.com/Saffhrin/FLA-Task2-Finite-Automata
-

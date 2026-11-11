@@ -1,20 +1,41 @@
 """Three input validators represented by explicit finite automata."""
-from .automata import DFA, NFA
+from .automata import DFA, NFA, product_dfa
 
 
-def _password_step(state: tuple[int, int], char: str) -> tuple[int, int]:
-    length, flags = state
-    flags |= (1 if char.isascii() and char.isupper() else 0)
-    flags |= (2 if char.isascii() and char.islower() else 0)
-    flags |= (4 if char.isascii() and char.isdigit() else 0)
-    flags |= (8 if char.isascii() and not char.isalnum() else 0)
-    return min(8, length + 1), flags
+def _is_upper(char: str) -> bool:
+    return char.isascii() and char.isupper()
 
 
-PASSWORD_DFA = DFA(
-    start=(0, 0),
-    accepting=frozenset((8, mask) for mask in range(16) if mask == 15),
-    transition=_password_step,
+def _is_lower(char: str) -> bool:
+    return char.isascii() and char.islower()
+
+
+def _is_digit(char: str) -> bool:
+    return char.isascii() and char.isdigit()
+
+
+def _is_special(char: str) -> bool:
+    return char.isascii() and not char.isalnum()
+
+
+def _length_step(state: int, _char: str) -> int:
+    return min(8, state + 1)
+
+
+def _flag_step(predicate):
+    return lambda seen, char: seen or predicate(char)
+
+
+_length_dfa = DFA(0, frozenset({8}), _length_step)
+_upper_dfa = DFA(False, frozenset({True}), _flag_step(_is_upper))
+_lower_dfa = DFA(False, frozenset({True}), _flag_step(_is_lower))
+_digit_dfa = DFA(False, frozenset({True}), _flag_step(_is_digit))
+_special_dfa = DFA(False, frozenset({True}), _flag_step(_is_special))
+
+# Direct product: capped length × four independent category-seen automata.
+PASSWORD_DFA = product_dfa(
+    (_length_dfa, _upper_dfa, _lower_dfa, _digit_dfa, _special_dfa),
+    (range(9), (False, True), (False, True), (False, True), (False, True)),
 )
 
 
@@ -98,4 +119,3 @@ def validate_email_min_dfa(value: str) -> bool:
 
 def validate_pin(value: str) -> bool:
     return PIN_DFA.run(value)[0]
-

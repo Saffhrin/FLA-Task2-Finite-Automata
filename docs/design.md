@@ -27,7 +27,7 @@ flowchart LR
 
 ### Password policy (DFA)
 
-Alphabet: ASCII characters. For the policy categories, characters are mapped to uppercase, lowercase, digit, or special (ASCII non-alphanumeric). Let a state be `(n, m)`, where `n ∈ {0,…,8}` is the length capped at 8 and `m ∈ {0,…,15}` is a four-bit mask for the categories observed. The transition increments `n` up to 8 and sets the corresponding category bit. Start state `(0,0)`; accepting states are exactly `(8,15)`. This finite product DFA accepts strings of at least eight characters containing each category. Non-ASCII characters do not satisfy any category; a non-ASCII symbol still counts toward total length.
+Alphabet: ASCII characters, with any non-ASCII character still counted toward length but not satisfying a category. The implementation constructs the direct product of five component DFAs: one length counter `n ∈ {0,…,8}` capped at 8, plus four two-state machines recording whether uppercase, lowercase, ASCII digit, and ASCII non-alphanumeric have appeared. The start state is `(0, false, false, false, false)`. Acceptance requires length state 8 and all four flags true. The product has at most `9 × 2⁴ = 144` states and recognizes strings of at least eight characters containing each category.
 
 ```mermaid
 stateDiagram-v2
@@ -37,9 +37,9 @@ stateDiagram-v2
   Track --> Reject: end of input otherwise
 ```
 
-The shown control state is an abstraction; the full DFA state is the pair `(n,m)`, up to 144 possible pairs.
+The implementation state is a five-tuple. This is equivalent to `(n,m)` where the four Boolean flags are packed into a category bit mask, also giving at most 144 possible states.
 
-For the password product DFA, every input symbol increments `n` up to 8. Its category bit is `1` for uppercase, `2` for lowercase, `4` for ASCII digit, and `8` for ASCII non-alphanumeric; the transition ORs that bit into `m`. All other bits are unchanged.
+For the password product DFA, every input symbol advances the length component up to 8. Each category component independently changes from unseen to seen when its predicate matches; once seen, it stays seen. This direct product construction makes the conjunction of the five requirements explicit.
 
 ### Email syntax subset (NFA → DFA → minimized DFA)
 
@@ -138,4 +138,3 @@ Password acceptance only checks the declared character policy; it does not estim
 
 1. J. E. Hopcroft, R. Motwani, and J. D. Ullman, *Introduction to Automata Theory, Languages, and Computation*, 3rd ed., Pearson, 2006.
 2. Python Software Foundation, *Python 3 Documentation*, https://docs.python.org/3/.
-

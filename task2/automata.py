@@ -1,9 +1,32 @@
 """Small reusable DFA and NFA recognizers."""
 from dataclasses import dataclass
 from collections import deque
+from itertools import product as cartesian_product
 from typing import Callable, FrozenSet, Hashable, Iterable
 
 State = Hashable
+
+
+def product_dfa(components: tuple["DFA", ...], state_sets: tuple[Iterable[State], ...]) -> "DFA":
+    """Construct the direct product of finite DFAs.
+
+    A product state is the tuple of component states. It accepts only when
+    every component is in one of its own accepting states.
+    """
+    component_states = tuple(tuple(states) for states in state_sets)
+    states = tuple(cartesian_product(*component_states))
+    accepting = frozenset(
+        state_tuple for state_tuple in states
+        if all(state in dfa.accepting for state, dfa in zip(state_tuple, components))
+    )
+    return DFA(
+        start=tuple(dfa.start for dfa in components),
+        accepting=accepting,
+        transition=lambda state, char: tuple(
+            dfa.transition(component_state, char)
+            for component_state, dfa in zip(state, components)
+        ),
+    )
 
 
 @dataclass(frozen=True)
@@ -129,4 +152,3 @@ class NFA:
         """Return the reachable powerset states, including the empty dead set."""
         symbols = tuple(alphabet)
         return self.to_dfa(symbols).reachable_states(symbols)
-
