@@ -41,31 +41,53 @@ The shown control state is an abstraction; the full DFA state is the pair `(n,m)
 
 For the password product DFA, every input symbol increments `n` up to 8. Its category bit is `1` for uppercase, `2` for lowercase, `4` for ASCII digit, and `8` for ASCII non-alphanumeric; the transition ORs that bit into `m`. All other bits are unchanged.
 
-### Email syntax subset (NFA)
+### Email syntax subset (NFA → DFA → minimized DFA)
 
-Language: `ALNUM+ @ ALNUM+ . LETTER{2,}` over ASCII, where the NFA may choose a dot in the domain as the boundary to the final alphabetic suffix. Start `local`; accepting state `suffix_more`. On `ALNUM`, `local` and `domain` loop; `local` goes to `domain` on `@`; `domain` loops on alphanumeric and may go to `suffix_first` on `.`; `suffix_first` requires a letter to enter `suffix_more`, which loops on letters. All unspecified transitions go to the empty state set. Acceptance requires at least one suffix letter after the first, so the TLD has length ≥2. This intentionally narrow subset excludes many legal addresses and does not assert mailbox existence.
+This recognizer intentionally accepts a practical ASCII subset, not the entire email standard:
+
+```text
+local  = alnum+ ( [._-] alnum+ )*
+label  = alnum+ ( '-' alnum+ )*
+domain = label ( '.' label )* '.' tld
+tld    = letter{2,}
+address = local '@' domain
+```
+
+The NFA requires an alphanumeric at the start and after every local/domain separator. At each domain dot following a complete label, it has two possible transitions: continue with another domain label, or guess that this dot starts the final suffix. The guessed path accepts only after two or more ASCII letters. Subset construction turns each active NFA-state set into one DFA state; partition refinement then merges equivalent DFA states. Tests compare all three recognizers on the same examples.
 
 ```mermaid
 stateDiagram-v2
-  [*] --> local
-  local --> local: ASCII alphanumeric
-  local --> domain: @
-  domain --> domain: ASCII alphanumeric
-  domain --> suffix_first: . (NFA choice)
-  suffix_first --> suffix_more: ASCII letter
-  suffix_more --> suffix_more: ASCII letter
-  suffix_more --> [*]: end of input / accept
+  [*] --> local_start
+  local_start --> local_word: ASCII alphanumeric
+  local_word --> local_word: ASCII alphanumeric
+  local_word --> local_need: . _ -
+  local_need --> local_word: ASCII alphanumeric
+  local_word --> domain_start: @
+  domain_start --> domain_word: ASCII alphanumeric
+  domain_word --> domain_word: ASCII alphanumeric
+  domain_word --> domain_hyphen: -
+  domain_hyphen --> domain_word: ASCII alphanumeric
+  domain_word --> domain_after_dot: . (continue domain)
+  domain_word --> tld_first: . (NFA guesses final suffix)
+  domain_after_dot --> domain_word: ASCII alphanumeric
+  tld_first --> tld_one: ASCII letter
+  tld_one --> tld_accept: ASCII letter
+  tld_accept --> tld_accept: ASCII letter
+  tld_accept --> [*]: end of input / accept
 ```
 
 | Current NFA state | Input class | Next state set |
 |---|---|---|
-| `local` | ASCII alphanumeric | `{local}` |
-| `local` | `@` | `{domain}` |
-| `domain` | ASCII alphanumeric | `{domain}` |
-| `domain` | `.` | `{suffix_first}` |
-| `suffix_first` | ASCII letter | `{suffix_more}` |
-| `suffix_more` | ASCII letter | `{suffix_more}` |
+| `local_start` | ASCII alphanumeric | `{local_word}` |
+| `local_word` | ASCII alphanumeric / local separator / `@` | `{local_word}` / `{local_need}` / `{domain_start}` |
+| `domain_word` | ASCII alphanumeric / hyphen / dot | `{domain_word}` / `{domain_hyphen}` / `{domain_after_dot, tld_first}` |
+| `domain_after_dot` | ASCII alphanumeric | `{domain_word}` |
+| `tld_first` | ASCII letter | `{tld_one}` |
+| `tld_one` | ASCII letter | `{tld_accept}` |
+| `tld_accept` | ASCII letter | `{tld_accept}` |
 | Any state | any other symbol | `∅` |
+
+The NFA active-state set after a domain dot initially contains both `domain_after_dot` and `tld_first`. Subsequent input keeps valid alternatives alive, demonstrating NFA branching directly.
 
 ### ATM PIN (DFA)
 
@@ -101,18 +123,19 @@ stateDiagram-v2
 | Validator | Accepted examples | Rejected examples |
 |---|---|---|
 | Password | `Abcdef1!`, `Stronger9#word`, `A1aaaaa!`, `Qwerty7$`, `Passcode2@` | `Ab1!xyz`, `abcdefgh1!`, `ABCDEFGH1!`, `Abcdefgh!`, `Abcdefg1` |
-| Email subset | `user@gmail.com`, `student123@yahoo.in`, `a@b.co`, `firstlast@subexample.org`, `x@y.ab` | `@gmail.com`, `user@gmail`, `user@.com`, `user@domain.c`, `user@@domain.com` |
+| Email subset | `user@gmail.com`, `student123@yahoo.in`, `a@b.co`, `first.last@sub.example.org`, `x@y.ab` | `@gmail.com`, `user@gmail`, `user@.com`, `user@domain.c`, `user..name@domain.com` |
 | PIN | `1234`, `0000`, `9087`, `5678`, `2468` | `123`, `12345`, `12A4`, `１２３４`, empty string |
 
 ## Implementation and tests
 
-The code in `task2/` provides reusable DFA/NFA runners and three recognizers. The CLI is launched with `python -m task2`. `tests/test_validators.py` gives five or more examples in each accepted/rejected group; run them with `python -m unittest discover -s tests -v`.
+The code in `task2/` provides reusable DFA/NFA runners, NFA subset construction, DFA partition refinement, three validators, and a separate three-strike session DFA. The machine-readable model summary is `docs/automata.json`. The suite includes an exhaustive short-string comparison of the NFA, subset DFA, and minimized DFA over representative input classes. Launch `python -m task2` for the interactive CLI, `python -m task2 --stats` for state counts, or `python -m task2 --limits` for scope boundaries. Open `docs/index.html` locally for the browser demo. Run the standard-library tests with `python -m unittest discover -s tests -v`.
 
 ## Limitations and conclusion
 
-Password acceptance only checks the declared character policy; it does not estimate entropy or check breached-password lists. Email syntax is a deliberately defined subset and cannot verify a mailbox. PIN format recognition does not check a bank account, secret, retry counter, or card status. Within these boundaries, the project shows how DFA state tracks finite summaries and how an NFA accepts when any active path reaches a final state.
+Password acceptance only checks the declared character policy; it does not estimate entropy or check breached-password lists. Email syntax is a deliberately defined subset and cannot verify a mailbox. PIN format recognition does not check a bank account or secret. The independent session DFA demonstrates a three-failure lockout policy but is not integrated with a real bank. Within these boundaries, the project shows finite-state summaries, NFA branching, subset construction, and DFA minimization.
 
 ## References
 
 1. J. E. Hopcroft, R. Motwani, and J. D. Ullman, *Introduction to Automata Theory, Languages, and Computation*, 3rd ed., Pearson, 2006.
 2. Python Software Foundation, *Python 3 Documentation*, https://docs.python.org/3/.
+
