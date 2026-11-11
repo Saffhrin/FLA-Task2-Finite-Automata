@@ -38,6 +38,5 @@ docs/        formal design and report content
 
 The validators check syntax only. Password acceptance is not a security-strength rating, email acceptance does not prove mailbox existence, and PIN acceptance does not authenticate a bank account.
 
-## Publish later
+Repository: https://github.com/Saffhrin/FLA-Task2-Finite-Automata
 
-This folder is already a separate local Git repository. After creating an empty GitHub repository, add it as `origin`, commit the files, and push the `main` branch. No GitHub account was accessed and nothing has been published.
