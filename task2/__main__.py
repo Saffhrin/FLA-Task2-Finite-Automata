@@ -1,7 +1,7 @@
 import argparse
 
 from .session import run_session
-from .validators import EMAIL_CLASSES, EMAIL_DFA, EMAIL_MIN_DFA, PASSWORD_CLASSES, PASSWORD_DFA, validate_email, validate_password, validate_pin
+from .validators import EMAIL_CLASSES, EMAIL_DFA, EMAIL_MIN_DFA, EMAIL_NFA, PASSWORD_CLASSES, PASSWORD_DFA, PIN_DFA
 
 
 def main() -> None:
@@ -13,7 +13,7 @@ def main() -> None:
         print(f"Password product DFA: 144 possible states; {len(PASSWORD_DFA.reachable_states(PASSWORD_CLASSES))} reachable")
         print(f"Email NFA subset DFA: {len(EMAIL_DFA.reachable_states(EMAIL_CLASSES))} reachable states")
         print(f"Email minimized DFA: {len(EMAIL_MIN_DFA.reachable_states(EMAIL_CLASSES))} states")
-        print("Four-digit PIN DFA: 6 states (q0–q4 plus dead)")
+        print("Four-digit PIN DFA: 6 states (q0 through q4 plus dead)")
         print("Three-strike session DFA: 4 states")
         return
     if args.limits:
@@ -23,9 +23,9 @@ def main() -> None:
         print("Session DFA: models a consecutive-failure policy, not an actual bank/card system.")
         return
     checks = {
-        "1": ("Password", validate_password),
-        "2": ("Email subset", validate_email),
-        "3": ("Four-digit ATM PIN", validate_pin),
+        "1": ("Password", PASSWORD_DFA),
+        "2": ("Email subset (NFA)", EMAIL_NFA),
+        "3": ("Four-digit ATM PIN", PIN_DFA),
     }
     while True:
         print("\nFinite Automata Input Validator\n1) Password\n2) Email format subset\n3) ATM PIN format\n4) Three-strike session DFA\nq) Quit")
@@ -43,9 +43,14 @@ def main() -> None:
         if choice not in checks:
             print("Choose 1, 2, 3, 4, or q.")
             continue
-        label, checker = checks[choice]
+        label, machine = checks[choice]
         value = input(f"{label}: ")
-        print("ACCEPTED" if checker(value) else "REJECTED")
+        accepted, path = machine.run(value)
+        print("ACCEPTED" if accepted else "REJECTED")
+        print("State trace:")
+        for index, state in enumerate(path):
+            readable_state = sorted(state) if isinstance(state, frozenset) else state
+            print(f"  after {index} character(s): {readable_state!r}")
 
 
 if __name__ == "__main__":

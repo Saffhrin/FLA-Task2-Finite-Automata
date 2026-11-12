@@ -1,6 +1,6 @@
 # Finite Automata for Real-Time Input Validation
 
-An individual Formal Language and Automata project demonstrating DFA and NFA models for password rules, email-format checks, and four-digit ATM PIN formatting. A separate session DFA models a three-consecutive-failure lockout policy. The command-line program prints recognizer results and traces; a standalone browser demo provides an interactive view.
+An individual Formal Language and Automata project demonstrating DFA and NFA models for password rules, email-format checks, and four-digit ATM PIN formatting. A separate session DFA models a three-consecutive-failure lockout policy. The command-line program reports acceptance and prints the state reached after each character; a standalone browser demo provides an interactive view.
 
 ## Models at a glance
 
@@ -8,7 +8,7 @@ An individual Formal Language and Automata project demonstrating DFA and NFA mod
 |---|---|---|
 | ATM PIN format | DFA | 6 states: five digit-count states and a rejecting sink |
 | Password policy | Product of five component DFAs | 144 possible product states; 112 reachable under the defined input classes |
-| Email-format subset | Hand-specified NFA → subset DFA → minimized DFA | 10 NFA states → 9 reachable subset states → 8 minimized states |
+| Email-format subset | Hand-specified NFA → subset DFA → minimized DFA | 10 NFA states → 10 reachable subset states (including the empty set) → 8 minimized states |
 | Consecutive-failure lockout | Event DFA over correct/wrong attempts | 4 states, including an absorbing locked state |
 
 The project describes each input language explicitly, shows how its automaton processes a string, and includes tests that compare related constructions. State counts refer to these implementation models and their declared alphabets.
@@ -24,7 +24,7 @@ python -m task2 --limits
 python -m unittest discover -s tests -v
 ```
 
-The menu runs each validator. For example, choose the email option and enter `student123@yahoo.in` to see whether it is accepted. The statistics option reports automaton sizes; the limits option prints what format validation does not establish.
+The menu runs each validator and prints its state trace. For example, choose the email option and enter `student123@yahoo.in` to see the NFA's active states after each character. The statistics option reports automaton sizes; the limits option prints what format validation does not establish.
 
 Open [`docs/index.html`](docs/index.html) for the browser demo. It runs locally without a server or external packages. The implementation and report are in [`task2/`](task2/) and [`docs/design.md`](docs/design.md).
 
