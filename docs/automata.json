@@ -5,8 +5,9 @@
     "password_policy": {
       "type": "DFA",
       "state": "Direct product state (n, upper, lower, digit, special): n is length capped at 8 and each flag records whether that category has appeared; equivalent to (n,m) with a 4-bit mask",
-      "start": [0, 0],
-      "acceptance": "end of input with n=8 and m=15",
+      "start": [0, false, false, false, false],
+      "acceptance": "end of input with length=8 and all four category flags true",
+      "reachable_states": 112,
       "mask_bits": {"uppercase": 1, "lowercase": 2, "ascii_digit": 4, "ascii_non_alphanumeric": 8},
       "construction": "Direct product of five component DFAs: one capped length counter and four seen/not-seen category recognizers",
       "transition": "advance n up to 8; each category component changes from false to true when matched and then stays true"
@@ -47,3 +48,4 @@
     }
   }
 }
+
