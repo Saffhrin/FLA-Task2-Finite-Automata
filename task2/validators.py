@@ -37,6 +37,7 @@ PASSWORD_DFA = product_dfa(
     (_length_dfa, _upper_dfa, _lower_dfa, _digit_dfa, _special_dfa),
     (range(9), (False, True), (False, True), (False, True), (False, True)),
 )
+PASSWORD_CLASSES = ("A", "a", "0", "!", "é")
 
 
 def _pin_step(state: int | str, char: str) -> int | str:

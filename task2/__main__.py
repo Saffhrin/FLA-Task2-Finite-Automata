@@ -1,7 +1,7 @@
 import argparse
 
 from .session import run_session
-from .validators import EMAIL_CLASSES, EMAIL_DFA, EMAIL_MIN_DFA, validate_email, validate_password, validate_pin
+from .validators import EMAIL_CLASSES, EMAIL_DFA, EMAIL_MIN_DFA, PASSWORD_CLASSES, PASSWORD_DFA, validate_email, validate_password, validate_pin
 
 
 def main() -> None:
@@ -10,7 +10,7 @@ def main() -> None:
     parser.add_argument("--limits", action="store_true", help="show what format checks do not establish")
     args = parser.parse_args()
     if args.stats:
-        print("Password product DFA: 9 × 16 = 144 possible states (some unreachable)")
+        print(f"Password product DFA: 144 possible states; {len(PASSWORD_DFA.reachable_states(PASSWORD_CLASSES))} reachable")
         print(f"Email NFA subset DFA: {len(EMAIL_DFA.reachable_states(EMAIL_CLASSES))} reachable states")
         print(f"Email minimized DFA: {len(EMAIL_MIN_DFA.reachable_states(EMAIL_CLASSES))} states")
         print("Four-digit PIN DFA: 6 states (q0–q4 plus dead)")
@@ -50,4 +50,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
