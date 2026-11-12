@@ -1,41 +1,51 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" role="img" aria-label="Four-digit PIN DFA">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 455" role="img" aria-label="Four-digit PIN DFA transition diagram">
 <defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#344054"/></marker></defs>
 <rect width="100%" height="100%" rx="16" fill="#fff"/>
-<style>text{font-family:system-ui,Segoe UI,sans-serif;fill:#172b4d}.edge{stroke:#344054;stroke-width:2;fill:none;marker-end:url(#arrow)}.node{fill:#fff;stroke:#344054;stroke-width:2}.accept{stroke:#155eef}.label{font-size:15px}.small{font-size:13px;fill:#526174}</style>
+<style>text{font-family:system-ui,Segoe UI,sans-serif;fill:#172b4d}.edge{fill:none;stroke:#344054;stroke-width:2;marker-end:url(#arrow)}.node{fill:#fff;stroke:#344054;stroke-width:2}.label{font-size:15px}.note{font-size:14px;fill:#526174}</style>
 <text x="24" y="32" font-size="20" font-weight="700">Four-digit PIN DFA</text>
-<path class="edge" d="M126.0,135.0 Q172.5,135.0 219.0,135.0"/>
-<text class="label" text-anchor="middle" x="172.5" y="128.0">digit</text>
-<path class="edge" d="M281.0,135.0 Q327.5,135.0 374.0,135.0"/>
-<text class="label" text-anchor="middle" x="327.5" y="128.0">digit</text>
-<path class="edge" d="M436.0,135.0 Q482.5,135.0 529.0,135.0"/>
-<text class="label" text-anchor="middle" x="482.5" y="128.0">digit</text>
-<path class="edge" d="M591.0,135.0 Q637.5,135.0 684.0,135.0"/>
-<text class="label" text-anchor="middle" x="637.5" y="128.0">digit</text>
-<path class="edge" d="M126.0,134.4 Q458.4,127.8 780.0,212.1"/>
-<text class="label" text-anchor="middle" x="455.7" y="143.6">other</text>
-<path class="edge" d="M280.9,136.9 Q533.8,152.8 779.9,212.7"/>
-<text class="label" text-anchor="middle" x="532.1" y="156.8">other</text>
-<path class="edge" d="M435.3,141.4 Q607.5,177.5 779.7,213.6"/>
-<text class="label" text-anchor="middle" x="607.5" y="170.5">other</text>
-<path class="edge" d="M587.0,150.3 Q677.0,201.2 779.3,215.7"/>
-<text class="label" text-anchor="middle" x="680.0" y="185.1">other</text>
-<path class="edge" d="M720.4,165.5 Q729.2,214.8 779.1,218.0"/>
-<text class="label" text-anchor="middle" x="739.5" y="196.3">any</text>
-<path class="edge" d="M792,195 C748,130 872,130 828,195"/>
-<text class="label" text-anchor="middle" x="810.0" y="143.0">any</text>
-<path class="edge" d="M17,135 L60,135"/>
-<circle class="node" cx="95" cy="135" r="31"/>
-<text text-anchor="middle" dominant-baseline="middle" x="95" y="135" font-size="16">q0</text>
-<circle class="node" cx="250" cy="135" r="31"/>
-<text text-anchor="middle" dominant-baseline="middle" x="250" y="135" font-size="16">q1</text>
-<circle class="node" cx="405" cy="135" r="31"/>
-<text text-anchor="middle" dominant-baseline="middle" x="405" y="135" font-size="16">q2</text>
-<circle class="node" cx="560" cy="135" r="31"/>
-<text text-anchor="middle" dominant-baseline="middle" x="560" y="135" font-size="16">q3</text>
-<circle class="node accept" cx="715" cy="135" r="31"/>
-<circle cx="715" cy="135" r="26" fill="none" stroke="#155eef" stroke-width="1.5"/>
-<text text-anchor="middle" dominant-baseline="middle" x="715" y="135" font-size="16">q4</text>
-<circle class="node" cx="810" cy="220" r="31"/>
-<text text-anchor="middle" dominant-baseline="middle" x="810" y="220" font-size="16">dead</text>
-<text class="small" x="24" y="302">q4 accepts only at end of input. The rejecting sink is reached by invalid or extra input.</text>
+<path class="edge" d="M18,130 L57,130"/>
+<path class="edge" d="M127,130 L238,130"/>
+<rect x="125.0" y="99" width="114" height="22" rx="5" fill="#fff"/>
+<text class="label" x="182" y="116" text-anchor="middle">D (one digit)</text>
+<path class="edge" d="M302,130 L413,130"/>
+<rect x="300.0" y="99" width="114" height="22" rx="5" fill="#fff"/>
+<text class="label" x="357" y="116" text-anchor="middle">D (one digit)</text>
+<path class="edge" d="M477,130 L588,130"/>
+<rect x="475.0" y="99" width="114" height="22" rx="5" fill="#fff"/>
+<text class="label" x="532" y="116" text-anchor="middle">D (one digit)</text>
+<path class="edge" d="M652,130 L763,130"/>
+<rect x="650.0" y="99" width="114" height="22" rx="5" fill="#fff"/>
+<text class="label" x="707" y="116" text-anchor="middle">D (one digit)</text>
+<path class="edge" d="M95,162 C105,235 315,270 418,329"/>
+<rect x="138.0" y="205" width="34" height="22" rx="5" fill="#fff"/>
+<text class="label" x="155" y="222" text-anchor="middle">O</text>
+<path class="edge" d="M270,162 C280,225 365,270 430,329"/>
+<rect x="293.0" y="229" width="34" height="22" rx="5" fill="#fff"/>
+<text class="label" x="310" y="246" text-anchor="middle">O</text>
+<path class="edge" d="M445,162 L445,325"/>
+<rect x="458.0" y="228" width="34" height="22" rx="5" fill="#fff"/>
+<text class="label" x="475" y="245" text-anchor="middle">O</text>
+<path class="edge" d="M620,162 C610,225 525,270 460,329"/>
+<rect x="563.0" y="229" width="34" height="22" rx="5" fill="#fff"/>
+<text class="label" x="580" y="246" text-anchor="middle">O</text>
+<path class="edge" d="M795,162 C785,235 575,270 472,329"/>
+<rect x="718.0" y="205" width="34" height="22" rx="5" fill="#fff"/>
+<text class="label" x="735" y="222" text-anchor="middle">any</text>
+<path class="edge" d="M421,338 C378,285 512,285 469,338"/>
+<rect x="428.0" y="261" width="34" height="22" rx="5" fill="#fff"/>
+<text class="label" x="445" y="278" text-anchor="middle">any</text>
+<circle class="node" cx="95" cy="130" r="32" stroke="#344054"/>
+<text x="95" y="130" text-anchor="middle" dominant-baseline="middle" font-size="16">q0</text>
+<circle class="node" cx="270" cy="130" r="32" stroke="#344054"/>
+<text x="270" y="130" text-anchor="middle" dominant-baseline="middle" font-size="16">q1</text>
+<circle class="node" cx="445" cy="130" r="32" stroke="#344054"/>
+<text x="445" y="130" text-anchor="middle" dominant-baseline="middle" font-size="16">q2</text>
+<circle class="node" cx="620" cy="130" r="32" stroke="#344054"/>
+<text x="620" y="130" text-anchor="middle" dominant-baseline="middle" font-size="16">q3</text>
+<circle class="node" cx="795" cy="130" r="32" stroke="#155eef"/>
+<circle cx="795" cy="130" r="26" fill="none" stroke="#155eef" stroke-width="1.5"/>
+<text x="795" y="130" text-anchor="middle" dominant-baseline="middle" font-size="16">q4</text>
+<circle class="node" cx="445" cy="360" r="32" stroke="#344054"/>
+<text x="445" y="360" text-anchor="middle" dominant-baseline="middle" font-size="16">dead</text>
+<text class="note" x="24" y="414">D = one ASCII digit (0–9; e.g. 7); O = one non-digit character. q4 accepts at end; extra input reaches dead.</text>
 </svg>
