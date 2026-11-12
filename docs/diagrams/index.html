@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Automata Diagrams | Task 2</title>
+  <style>
+    :root{color-scheme:light;--ink:#172b4d;--muted:#526174;--line:#d7e0ea;--paper:#f3f6fa;--accent:#155eef}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 system-ui,Segoe UI,sans-serif}
+    main{max-width:1080px;margin:36px auto;padding:0 18px}h1{font-size:clamp(1.8rem,4vw,2.6rem);margin:0 0 8px}header p{color:var(--muted);margin:0 0 24px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:18px}.card{background:white;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 6px 20px #172b4d0b}
+    h2{font-size:1.2rem;margin:0 0 8px}.card p{color:var(--muted);margin:0 0 12px}.card img{display:block;width:100%;height:auto}.back{margin:20px 0}.back a{color:var(--accent)}
+  </style>
+</head>
+<body><main>
+  <header><h1>Finite Automata Diagrams</h1><p>Generated from this project's own model descriptions. State definitions and scope are in the <a href="../design.md">Task 2 report</a>.</p></header>
+  <section class="grid">
+    <article class="card"><h2>Password Product</h2><p>A capped length counter and four independent seen/not-seen DFAs combine by direct product.</p><a href="password_product.svg"><img src="password_product.svg" alt="Password Product state diagram"></a></article>
+<article class="card"><h2>Pin Dfa</h2><p>Four ASCII digits are consumed in sequence; invalid and extra input is rejected.</p><a href="pin_dfa.svg"><img src="pin_dfa.svg" alt="Pin Dfa state diagram"></a></article>
+<article class="card"><h2>Session Lockout</h2><p>Correct attempts reset the streak; three consecutive failures lock the session.</p><a href="session_lockout.svg"><img src="session_lockout.svg" alt="Session Lockout state diagram"></a></article>
+<article class="card"><h2>Email Nfa</h2><p>A domain dot creates two NFA paths so the final suffix can be guessed nondeterministically.</p><a href="email_nfa.svg"><img src="email_nfa.svg" alt="Email Nfa state diagram"></a></article>
+  </section>
+  <p class="back"><a href="../index.html">← Return to the interactive validator demo</a></p>
+</main></body>
+</html>

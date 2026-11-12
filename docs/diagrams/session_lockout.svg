@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 970 350" role="img" aria-label="Three-consecutive-failure session DFA">
+<defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#344054"/></marker></defs>
+<rect width="100%" height="100%" rx="16" fill="#fff"/>
+<style>text{font-family:system-ui,Segoe UI,sans-serif;fill:#172b4d}.edge{stroke:#344054;stroke-width:2;fill:none;marker-end:url(#arrow)}.node{fill:#fff;stroke:#344054;stroke-width:2}.accept{stroke:#155eef}.label{font-size:15px}.small{font-size:13px;fill:#526174}</style>
+<text x="24" y="32" font-size="20" font-weight="700">Three-consecutive-failure session DFA</text>
+<path class="edge" d="M112,165 C68,100 192,100 148,165"/>
+<text class="label" text-anchor="middle" x="130.0" y="113.0">C</text>
+<path class="edge" d="M161.0,190.0 Q247.5,190.0 334.0,190.0"/>
+<text class="label" text-anchor="middle" x="247.5" y="183.0">W</text>
+<path class="edge" d="M338.6,206.2 Q247.5,262.0 156.4,206.2"/>
+<text class="label" text-anchor="middle" x="247.5" y="227.1">C</text>
+<path class="edge" d="M396.0,190.0 Q482.5,190.0 569.0,190.0"/>
+<text class="label" text-anchor="middle" x="482.5" y="183.0">W</text>
+<path class="edge" d="M572.9,205.0 Q365.0,320.0 157.1,205.0"/>
+<text class="label" text-anchor="middle" x="365.0" y="255.5">C</text>
+<path class="edge" d="M631.0,190.0 Q717.5,190.0 804.0,190.0"/>
+<text class="label" text-anchor="middle" x="717.5" y="183.0">W</text>
+<path class="edge" d="M817,165 C773,100 897,100 853,165"/>
+<text class="label" text-anchor="middle" x="835.0" y="113.0">C or W</text>
+<path class="edge" d="M52,190 L95,190"/>
+<circle class="node" cx="130" cy="190" r="31"/>
+<text text-anchor="middle" dominant-baseline="middle" x="130" y="190" font-size="16">READY</text>
+<circle class="node" cx="365" cy="190" r="31"/>
+<text text-anchor="middle" dominant-baseline="middle" x="365" y="190" font-size="16">ONE</text>
+<circle class="node" cx="600" cy="190" r="31"/>
+<text text-anchor="middle" dominant-baseline="middle" x="600" y="190" font-size="16">TWO</text>
+<circle class="node accept" cx="835" cy="190" r="31"/>
+<circle cx="835" cy="190" r="26" fill="none" stroke="#155eef" stroke-width="1.5"/>
+<text text-anchor="middle" dominant-baseline="middle" x="835" y="190" font-size="16">LOCKED</text>
+<text class="small" x="24" y="330">C = correct attempt (reset); W = wrong attempt; LOCKED is absorbing.</text>
+</svg>

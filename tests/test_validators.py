@@ -1,7 +1,8 @@
 import unittest
 from itertools import product
 
-from task2.validators import EMAIL_CLASSES, EMAIL_DFA, EMAIL_MIN_DFA, EMAIL_NFA, validate_email, validate_email_dfa, validate_email_min_dfa, validate_password, validate_pin
+from fa_validators.session import run_session
+from fa_validators.validators import EMAIL_CLASSES, EMAIL_DFA, EMAIL_MIN_DFA, EMAIL_NFA, validate_email, validate_email_dfa, validate_email_min_dfa, validate_password, validate_pin
 
 
 class ValidatorTests(unittest.TestCase):
@@ -57,6 +58,20 @@ class ValidatorTests(unittest.TestCase):
             self.assertFalse(validate_pin(value))
 
 
+class SessionLockoutTests(unittest.TestCase):
+    def test_locks_after_three_consecutive_failures(self):
+        self.assertEqual(run_session("WWW")[0], "LOCKED")
+
+    def test_correct_attempt_resets_failure_streak(self):
+        self.assertEqual(run_session("WWCWW")[0], "TWO_WRONG")
+
+    def test_locked_state_is_absorbing(self):
+        self.assertEqual(run_session("WWWCC")[0], "LOCKED")
+
+    def test_rejects_unknown_event(self):
+        with self.assertRaises(ValueError):
+            run_session("WX")
+
+
 if __name__ == "__main__":
     unittest.main()
-

@@ -21,4 +21,3 @@ def run_session(events: str) -> tuple[str, tuple[str, ...]]:
             state = {"READY": "ONE_WRONG", "ONE_WRONG": "TWO_WRONG", "TWO_WRONG": "LOCKED"}[state]
         trace.append(state)
     return state, tuple(trace)
-

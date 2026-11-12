@@ -128,7 +128,7 @@ stateDiagram-v2
 
 ## Implementation and tests
 
-The code in `task2/` provides reusable DFA/NFA runners, NFA subset construction, DFA partition refinement, three validators, and a separate three-strike session DFA. The machine-readable model summary is `docs/automata.json`. The suite includes an exhaustive short-string comparison of the NFA, subset DFA, and minimized DFA over representative input classes. Launch `python -m task2` for the interactive CLI, `python -m task2 --stats` for state counts, or `python -m task2 --limits` for scope boundaries. Open `docs/index.html` locally for the browser demo. Run the standard-library tests with `python -m unittest discover -s tests -v`.
+The `fa_validators/` package provides reusable DFA/NFA runners, NFA subset construction, DFA partition refinement, three validators, a CLI, and a separate three-strike session DFA. The machine-readable model summary is `docs/automata.json`. The suite includes an exhaustive short-string comparison of the NFA, subset DFA, and minimized DFA over representative input classes. Launch `python -m fa_validators.cli` for the interactive CLI, add `--stats` for state counts, or add `--limits` for scope boundaries. Open `docs/index.html` for the browser demo and `docs/diagrams/index.html` for the generated diagrams. Run `python tools/make_diagrams.py` to rebuild those diagrams and the gallery. Run the standard-library tests with `python -m unittest discover -s tests -v`.
 
 ## Limitations and conclusion
 

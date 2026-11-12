@@ -18,15 +18,16 @@ The project describes each input language explicitly, shows how its automaton pr
 Requires Python 3.10 or newer. The recognizers and command-line demo use only the Python standard library.
 
 ```bash
-python -m task2
-python -m task2 --stats
-python -m task2 --limits
+python -m fa_validators.cli
+python -m fa_validators.cli --stats
+python -m fa_validators.cli --limits
 python -m unittest discover -s tests -v
+python tools/make_diagrams.py
 ```
 
 The menu runs each validator and prints its state trace. For example, choose the email option and enter `student123@yahoo.in` to see the NFA's active states after each character. The statistics option reports automaton sizes; the limits option prints what format validation does not establish.
 
-Open [`docs/index.html`](docs/index.html) for the browser demo. It runs locally without a server or external packages. The implementation and report are in [`task2/`](task2/) and [`docs/design.md`](docs/design.md).
+Open [`docs/index.html`](docs/index.html) for the interactive browser demo. It runs locally without a server or external packages. Open [`docs/diagrams/index.html`](docs/diagrams/index.html) for generated automaton diagrams. The implementation and report are in [`fa_validators/`](fa_validators/) and [`docs/design.md`](docs/design.md).
 
 ## 1. ATM PIN format
 
@@ -89,9 +90,11 @@ These automata answer whether a string follows the format defined here. They do 
 ## Project layout
 
 ```text
-task2/       reusable DFA/NFA engine, validators, and session DFA
-tests/       standard-library tests and bounded exhaustive NFA/DFA comparisons
-docs/        report, Mermaid diagrams, JSON model manifest, browser demo
+fa_validators/       automata.py, validators.py, session.py, and cli.py
+tests/               standard-library validator and session tests
+tools/               diagram builder and its HTML template
+docs/                report, automata.json, interactive demo, generated SVGs
+docs/diagrams/       password, PIN, session, and email diagrams plus gallery
 ```
 
 See [`docs/design.md`](docs/design.md) for formal definitions, transition details, examples, test scope, derivations, and report-ready discussion. The original assignment PDF was not attached to the referenced conversation, so check the stated policy against your course brief before submitting.
