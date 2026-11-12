@@ -24,8 +24,7 @@
 <text text-anchor="middle" dominant-baseline="middle" x="365" y="190" font-size="16">ONE</text>
 <circle class="node" cx="600" cy="190" r="31"/>
 <text text-anchor="middle" dominant-baseline="middle" x="600" y="190" font-size="16">TWO</text>
-<circle class="node accept" cx="835" cy="190" r="31"/>
-<circle cx="835" cy="190" r="26" fill="none" stroke="#155eef" stroke-width="1.5"/>
+<circle class="node" cx="835" cy="190" r="31"/>
 <text text-anchor="middle" dominant-baseline="middle" x="835" y="190" font-size="16">LOCKED</text>
-<text class="small" x="24" y="330">C = correct attempt (reset); W = wrong attempt; LOCKED is absorbing.</text>
+<text class="small" x="24" y="332">C = correct attempt (reset); W = wrong attempt; LOCKED is absorbing.</text>
 </svg>

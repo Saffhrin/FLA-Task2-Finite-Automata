@@ -33,41 +33,21 @@ Open [`docs/index.html`](docs/index.html) for the interactive browser demo. It r
 
 The PIN DFA accepts exactly four ASCII digits. Its states count digits read so far; any non-digit or any extra character enters the rejecting sink.
 
-```mermaid
-stateDiagram-v2
-  [*] --> q0
-  q0 --> q1: ASCII digit
-  q1 --> q2: ASCII digit
-  q2 --> q3: ASCII digit
-  q3 --> q4: ASCII digit
-  q4 --> [*]: accept at end of input
-  q0 --> dead: other character
-  q1 --> dead: other character
-  q2 --> dead: other character
-  q3 --> dead: other character
-  q4 --> dead: any extra character
-  dead --> dead: any character
-```
+![Four-digit PIN DFA transition diagram](docs/diagrams/pin_dfa.svg)
 
 The separate lockout DFA reads events `C` (correct attempt) and `W` (wrong attempt). A correct attempt resets the consecutive-failure count; the third consecutive wrong attempt enters the locked state.
 
-```mermaid
-stateDiagram-v2
-  [*] --> READY
-  READY --> READY: C
-  READY --> ONE_WRONG: W
-  ONE_WRONG --> READY: C
-  ONE_WRONG --> TWO_WRONG: W
-  TWO_WRONG --> READY: C
-  TWO_WRONG --> LOCKED: W
-  LOCKED --> LOCKED: C or W
-```
+![Three-consecutive-failure session DFA](docs/diagrams/session_lockout.svg)
 
 ## 2. Password policy
 
 The policy requires at least eight characters, with at least one ASCII uppercase letter, one ASCII lowercase letter, one ASCII digit, and one ASCII non-alphanumeric character. The implementation expresses this as a direct product of five small DFAs: a capped length counter and four category-seen flags. A product state is `(length, uppercase_seen, lowercase_seen, digit_seen, special_seen)`.
 
 The product has at most `9 × 2⁴ = 144` states. Some combinations cannot occur before enough characters have been read, leaving 112 reachable states over the declared input classes. The accepted language has no maximum length; spaces count as ASCII non-alphanumeric characters in this stated policy.
+
+![Password length-counter DFA](docs/diagrams/password_length_dfa.svg)
+
+![Password category-flag transition diagram](docs/diagrams/password_category_dfa.svg)
 
 ## 3. Email-format subset
 
@@ -82,6 +62,8 @@ address = local '@' domain
 ```
 
 At each domain dot, the NFA can either continue with another domain label or guess that the final suffix begins there. Subset construction creates a DFA from the reachable NFA-state sets; partition refinement minimizes that DFA. The report includes the transition table and the meaning of each subset state.
+
+![Email-format NFA transition diagram](docs/diagrams/email_nfa.svg)
 
 ## Syntax versus real-world checks
 

@@ -48,7 +48,10 @@ def graph_svg(title, width, height, states, edges, start, note=""):
             parts.append(f'<circle cx="{x}" cy="{y}" r="{RADIUS-5}" fill="none" stroke="#155eef" stroke-width="1.5"/>')
         parts.append(f'<text text-anchor="middle" dominant-baseline="middle" x="{x}" y="{y}" font-size="16">{escape(label)}</text>')
     if note:
-        parts.append(f'<text class="small" x="24" y="{height-20}">{escape(note)}</text>')
+        notes = note if isinstance(note, (tuple, list)) else [note]
+        first_y = height - 18 - 20 * (len(notes) - 1)
+        for index, line in enumerate(notes):
+            parts.append(f'<text class="small" x="24" y="{first_y + 20*index}">{escape(line)}</text>')
     parts.append('</svg>')
     return "\n".join(parts)
 
@@ -80,23 +83,101 @@ def password_svg():
     return "\n".join(parts)
 
 
+def password_length_svg():
+    states = [(f"q{i}", 95 + i * 155, 150, f"q{i}", i == 8) for i in range(9)]
+    edges = [(f"q{i}", f"q{i+1}", "any character", 0) for i in range(8)]
+    edges.append(("q8", "q8", "any character", 0))
+    return graph_svg(
+        "Password length DFA (counts up to 8)", 1450, 270, states, edges, "q0",
+        "q8 means length 8 or more; this component accepts at q8 and then stays there.")
+
+
+def password_flags_svg():
+    """Draw the 16-state subset DFA for the four requirement flags."""
+    categories = ("U", "L", "D", "S")
+    colors = {"U": "#087e8b", "L": "#155eef", "D": "#7a5af8", "S": "#c4320a"}
+    positions = {
+        frozenset(): (690, 120),
+        frozenset({"U"}): (210, 270), frozenset({"L"}): (520, 270),
+        frozenset({"D"}): (860, 270), frozenset({"S"}): (1170, 270),
+        frozenset({"U","L"}): (110, 430), frozenset({"U","D"}): (330, 430),
+        frozenset({"U","S"}): (570, 430), frozenset({"L","D"}): (810, 430),
+        frozenset({"L","S"}): (1050, 430), frozenset({"D","S"}): (1270, 430),
+        frozenset({"U","L","D"}): (210, 590), frozenset({"U","L","S"}): (520, 590),
+        frozenset({"U","D","S"}): (860, 590), frozenset({"L","D","S"}): (1170, 590),
+        frozenset({"U","L","D","S"}): (690, 750),
+    }
+    parts = [
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1380 830" role="img" aria-label="Password category product DFA with sixteen states">',
+        '<defs><marker id="arrow" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L9,4 L0,8 z" fill="#344054"/></marker></defs>',
+        '<rect width="100%" height="100%" rx="16" fill="#fff"/>',
+        '<style>text{font-family:system-ui,Segoe UI,sans-serif;fill:#172b4d}.edge{fill:none;stroke-width:1.6;marker-end:url(#arrow)}.node{fill:white;stroke:#344054;stroke-width:2}.muted{fill:#526174;font-size:14px}</style>',
+        '<text x="24" y="36" font-size="21" font-weight="700">Password category DFA: 16 seen/not-seen combinations</text>',
+    ]
+    parts.append('<path d="M690,65 L690,92" stroke="#344054" stroke-width="2" marker-end="url(#arrow)"/>')
+    parts.append('<text class="muted" x="706" y="82">start</text>')
+    sets = list(positions)
+    # A transition adds a category flag; already-seen categories loop at the same state.
+    for state in sets:
+        x1, y1 = positions[state]
+        for category in categories:
+            if category in state:
+                continue
+            target = frozenset(set(state) | {category})
+            x2, y2 = positions[target]
+            dx, dy = x2 - x1, y2 - y1
+            length = max(1.0, hypot(dx, dy))
+            px, py = -dy / length, dx / length
+            curve = (categories.index(category) - 1.5) * 8
+            cx, cy = (x1+x2)/2 + px*curve, (y1+y2)/2 + py*curve
+            sx, sy = cx-x1, cy-y1
+            ex, ey = cx-x2, cy-y2
+            sl, el = max(1.0,hypot(sx,sy)), max(1.0,hypot(ex,ey))
+            ax, ay = x1+sx/sl*25, y1+sy/sl*25
+            bx, by = x2+ex/el*25, y2+ey/el*25
+            parts.append(f'<path class="edge" stroke="{colors[category]}" d="M{ax:.1f},{ay:.1f} Q{cx:.1f},{cy:.1f} {bx:.1f},{by:.1f}"/>')
+            lx, ly = (ax+2*cx+bx)/4, (ay+2*cy+by)/4-4
+            parts.append(f'<text x="{lx:.1f}" y="{ly:.1f}" text-anchor="middle" font-size="13" fill="{colors[category]}">{category}</text>')
+    for state, (x, y) in positions.items():
+        label = "".join(category for category in categories if category in state) or "none"
+        accepting = len(state) == 4
+        parts.append(f'<circle class="node" cx="{x}" cy="{y}" r="25" stroke="{"#155eef" if accepting else "#344054"}"/>')
+        if accepting:
+            parts.append(f'<circle cx="{x}" cy="{y}" r="20" fill="none" stroke="#155eef" stroke-width="1.5"/>')
+        parts.append(f'<text x="{x}" y="{y}" text-anchor="middle" dominant-baseline="middle" font-size="13">{label}</text>')
+        loop_label = ",".join(["O"] + [category for category in categories if category in state])
+        parts.append(f'<path d="M{x-14},{y-21} C{x-45},{y-75} {x+45},{y-75} {x+14},{y-21}" fill="none" stroke="#667085" stroke-width="1.4" marker-end="url(#arrow)"/>')
+        parts.append(f'<text class="muted" x="{x}" y="{y-63}" text-anchor="middle">{loop_label} loop</text>')
+    parts.extend([
+        '<text class="muted" x="24" y="800">U = uppercase · L = lowercase · D = digit · S = ASCII non-alphanumeric · O = non-ASCII (category-neutral); seen categories loop.</text>',
+        '<text class="muted" x="24" y="821">The full password product also tracks length; acceptance requires q8 (8+) and the accepting ULDS state.</text>',
+        '</svg>',
+    ])
+    return "\n".join(parts)
+
+
 def build():
     OUTPUT.mkdir(parents=True, exist_ok=True)
     diagrams = {
         "password_product.svg": password_svg(),
+        "password_length_dfa.svg": password_length_svg(),
+        "password_category_dfa.svg": password_flags_svg(),
         "pin_dfa.svg": graph_svg(
-            "Four-digit PIN DFA", 900, 260,
-            [("q0", 105, 130, "q0", False), ("q1", 260, 130, "q1", False),
-             ("q2", 415, 130, "q2", False), ("q3", 570, 130, "q3", False),
-             ("q4", 725, 130, "q4", True), ("dead", 810, 220, "dead", False)],
+            "Four-digit PIN DFA", 900, 320,
+            [("q0", 95, 135, "q0", False), ("q1", 250, 135, "q1", False),
+             ("q2", 405, 135, "q2", False), ("q3", 560, 135, "q3", False),
+             ("q4", 715, 135, "q4", True), ("dead", 810, 220, "dead", False)],
             [("q0", "q1", "digit", 0), ("q1", "q2", "digit", 0),
              ("q2", "q3", "digit", 0), ("q3", "q4", "digit", 0),
+             ("q0", "dead", "other", -50), ("q1", "dead", "other", -25),
+             ("q2", "dead", "other", 0), ("q3", "dead", "other", 25),
+             ("q4", "dead", "any", 50),
              ("dead", "dead", "any", 0)], "q0",
-            "Any non-digit, or any character after q4, enters the rejecting sink."),
+            "q4 accepts only at end of input. The rejecting sink is reached by invalid or extra input."),
         "session_lockout.svg": graph_svg(
             "Three-consecutive-failure session DFA", 970, 350,
             [("READY", 130, 190, "READY", False), ("ONE", 365, 190, "ONE", False),
-             ("TWO", 600, 190, "TWO", False), ("LOCKED", 835, 190, "LOCKED", True)],
+             ("TWO", 600, 190, "TWO", False), ("LOCKED", 835, 190, "LOCKED", False)],
             [("READY", "READY", "C", 0), ("READY", "ONE", "W", 0),
              ("ONE", "READY", "C", -72), ("ONE", "TWO", "W", 0),
              ("TWO", "READY", "C", -130), ("TWO", "LOCKED", "W", 0),
@@ -104,11 +185,11 @@ def build():
             "C = correct attempt (reset); W = wrong attempt; LOCKED is absorbing."),
         "email_nfa.svg": graph_svg(
             "Email-format NFA (declared ASCII subset)", 1100, 500,
-            [("ls", 85, 205, "local_start", False), ("lw", 235, 205, "local_word", False),
-             ("ln", 235, 365, "local_need", False), ("ds", 390, 205, "domain_start", False),
-             ("dw", 550, 205, "domain_word", False), ("da", 720, 205, "after_dot", False),
-             ("dn", 550, 365, "domain_need", False), ("tf", 720, 365, "tld_first", False),
-             ("to", 900, 365, "tld_one", False), ("ta", 1030, 205, "tld_accept", True)],
+            [("ls", 85, 205, "n0", False), ("lw", 235, 205, "n1", False),
+             ("ln", 235, 365, "n2", False), ("ds", 390, 205, "n3", False),
+             ("dw", 550, 205, "n4", False), ("da", 720, 205, "n6", False),
+             ("dn", 550, 365, "n5", False), ("tf", 720, 365, "n7", False),
+             ("to", 900, 365, "n8", False), ("ta", 1030, 205, "n9", True)],
             [("ls", "lw", "alnum", 0), ("lw", "lw", "alnum", 0),
              ("lw", "ln", "._-", 0), ("ln", "lw", "alnum", 0),
              ("lw", "ds", "@", 0), ("ds", "dw", "alnum", 0),
@@ -117,13 +198,17 @@ def build():
              ("dw", "tf", ". suffix", 0), ("da", "dw", "alnum", 0),
              ("tf", "to", "letter", 0), ("to", "ta", "letter", 0),
              ("ta", "ta", "letter", 0)], "ls",
-            "At a domain dot, the NFA branches: continue a label or guess the suffix begins."),
+            ("At a domain dot, the NFA branches: continue a label or guess the suffix begins.",
+             "n0 local start · n1 local part · n2 after local separator · n3 after @ · n4 domain label",
+             "n5 after domain hyphen · n6 after domain dot · n7/n8 suffix letters · n9 accepting")),
     }
     for filename, svg in diagrams.items():
         (OUTPUT / filename).write_text(svg + "\n", encoding="utf-8")
 
     descriptions = {
         "password_product.svg": "A capped length counter and four independent seen/not-seen DFAs combine by direct product.",
+        "password_length_dfa.svg": "The length component counts up to eight; its final state represents every length of eight or more.",
+        "password_category_dfa.svg": "The 16-state category-flag DFA shows the accepting combination and category transitions.",
         "pin_dfa.svg": "Four ASCII digits are consumed in sequence; invalid and extra input is rejected.",
         "session_lockout.svg": "Correct attempts reset the streak; three consecutive failures lock the session.",
         "email_nfa.svg": "A domain dot creates two NFA paths so the final suffix can be guessed nondeterministically.",

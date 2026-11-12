@@ -16,6 +16,8 @@
   <header><h1>Finite Automata Diagrams</h1><p>Generated from this project's own model descriptions. State definitions and scope are in the <a href="../design.md">Task 2 report</a>.</p></header>
   <section class="grid">
     <article class="card"><h2>Password Product</h2><p>A capped length counter and four independent seen/not-seen DFAs combine by direct product.</p><a href="password_product.svg"><img src="password_product.svg" alt="Password Product state diagram"></a></article>
+<article class="card"><h2>Password Length Dfa</h2><p>The length component counts up to eight; its final state represents every length of eight or more.</p><a href="password_length_dfa.svg"><img src="password_length_dfa.svg" alt="Password Length Dfa state diagram"></a></article>
+<article class="card"><h2>Password Category Dfa</h2><p>The 16-state category-flag DFA shows the accepting combination and category transitions.</p><a href="password_category_dfa.svg"><img src="password_category_dfa.svg" alt="Password Category Dfa state diagram"></a></article>
 <article class="card"><h2>Pin Dfa</h2><p>Four ASCII digits are consumed in sequence; invalid and extra input is rejected.</p><a href="pin_dfa.svg"><img src="pin_dfa.svg" alt="Pin Dfa state diagram"></a></article>
 <article class="card"><h2>Session Lockout</h2><p>Correct attempts reset the streak; three consecutive failures lock the session.</p><a href="session_lockout.svg"><img src="session_lockout.svg" alt="Session Lockout state diagram"></a></article>
 <article class="card"><h2>Email Nfa</h2><p>A domain dot creates two NFA paths so the final suffix can be guessed nondeterministically.</p><a href="email_nfa.svg"><img src="email_nfa.svg" alt="Email Nfa state diagram"></a></article>

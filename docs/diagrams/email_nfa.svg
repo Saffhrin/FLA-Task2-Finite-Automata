@@ -35,25 +35,27 @@
 <text class="label" text-anchor="middle" x="1030.0" y="128.0">letter</text>
 <path class="edge" d="M7,205 L50,205"/>
 <circle class="node" cx="85" cy="205" r="31"/>
-<text text-anchor="middle" dominant-baseline="middle" x="85" y="205" font-size="16">local_start</text>
+<text text-anchor="middle" dominant-baseline="middle" x="85" y="205" font-size="16">n0</text>
 <circle class="node" cx="235" cy="205" r="31"/>
-<text text-anchor="middle" dominant-baseline="middle" x="235" y="205" font-size="16">local_word</text>
+<text text-anchor="middle" dominant-baseline="middle" x="235" y="205" font-size="16">n1</text>
 <circle class="node" cx="235" cy="365" r="31"/>
-<text text-anchor="middle" dominant-baseline="middle" x="235" y="365" font-size="16">local_need</text>
+<text text-anchor="middle" dominant-baseline="middle" x="235" y="365" font-size="16">n2</text>
 <circle class="node" cx="390" cy="205" r="31"/>
-<text text-anchor="middle" dominant-baseline="middle" x="390" y="205" font-size="16">domain_start</text>
+<text text-anchor="middle" dominant-baseline="middle" x="390" y="205" font-size="16">n3</text>
 <circle class="node" cx="550" cy="205" r="31"/>
-<text text-anchor="middle" dominant-baseline="middle" x="550" y="205" font-size="16">domain_word</text>
+<text text-anchor="middle" dominant-baseline="middle" x="550" y="205" font-size="16">n4</text>
 <circle class="node" cx="720" cy="205" r="31"/>
-<text text-anchor="middle" dominant-baseline="middle" x="720" y="205" font-size="16">after_dot</text>
+<text text-anchor="middle" dominant-baseline="middle" x="720" y="205" font-size="16">n6</text>
 <circle class="node" cx="550" cy="365" r="31"/>
-<text text-anchor="middle" dominant-baseline="middle" x="550" y="365" font-size="16">domain_need</text>
+<text text-anchor="middle" dominant-baseline="middle" x="550" y="365" font-size="16">n5</text>
 <circle class="node" cx="720" cy="365" r="31"/>
-<text text-anchor="middle" dominant-baseline="middle" x="720" y="365" font-size="16">tld_first</text>
+<text text-anchor="middle" dominant-baseline="middle" x="720" y="365" font-size="16">n7</text>
 <circle class="node" cx="900" cy="365" r="31"/>
-<text text-anchor="middle" dominant-baseline="middle" x="900" y="365" font-size="16">tld_one</text>
+<text text-anchor="middle" dominant-baseline="middle" x="900" y="365" font-size="16">n8</text>
 <circle class="node accept" cx="1030" cy="205" r="31"/>
 <circle cx="1030" cy="205" r="26" fill="none" stroke="#155eef" stroke-width="1.5"/>
-<text text-anchor="middle" dominant-baseline="middle" x="1030" y="205" font-size="16">tld_accept</text>
-<text class="small" x="24" y="480">At a domain dot, the NFA branches: continue a label or guess the suffix begins.</text>
+<text text-anchor="middle" dominant-baseline="middle" x="1030" y="205" font-size="16">n9</text>
+<text class="small" x="24" y="442">At a domain dot, the NFA branches: continue a label or guess the suffix begins.</text>
+<text class="small" x="24" y="462">n0 local start · n1 local part · n2 after local separator · n3 after @ · n4 domain label</text>
+<text class="small" x="24" y="482">n5 after domain hyphen · n6 after domain dot · n7/n8 suffix letters · n9 accepting</text>
 </svg>
